@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>아구뽀 알리미</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  /* ============ 여기만 바꾸면 우리반에 맞게 커스터마이징 가능 ============ */
+  :root{
+    --paper:#F3F1FB;
+    --paper2:#EAF2FB;
+    --card:#FFFFFF;
+    --ink:#2B2A3D;
+    --ink-soft:#6B6980;
+    --coral:#FF6B7A;
+    --coral-deep:#E8495B;
+    --mint:#38C9A3;
+    --mint-deep:#1FA687;
+    --sun:#FFC94A;
+    --sun-deep:#F0A93A;
+    --sky:#5B8DEF;
+    --sky-deep:#3E6FD1;
+    --line:#E1DFF0;
+    --shadow: 0 10px 24px rgba(43,42,61,0.09);
+    --shadow-sm: 0 4px 10px rgba(43,42,61,0.08);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 8% 8%, var(--paper2), transparent 40%),
+      radial-gradient(circle at 95% 15%, #FDEBEF, transparent 35%),
+      var(--paper);
+    color:var(--ink);
+    font-family:'Noto Sans KR', sans-serif;
+    min-height:100vh;
+    padding-bottom:90px;
+  }
+  h1,h2,h3,.display{font-family:'Jua', sans-serif; font-weight:400;}
+  .note-font{font-family:'Gaegu', sans-serif; font-weight:700;}
+
+  /* ---------- 상단 헤더 ---------- */
+  .topbar{
+    padding:18px 18px 14px;
+    max-width:720px;
+    margin:0 auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+  }
+  .topbar .class-name{
+    font-size:13px;
+    color:var(--ink-soft);
+    letter-spacing:0.5px;
+  }
+  .topbar .app-title{
+    font-size:26px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:2px;
+  }
+  .pin-dot{
+    width:10px;height:10px;border-radius:50%;
+    background:var(--coral);
+    box-shadow:0 0 0 4px rgba(255,107,122,0.18);
+  }
+  .admin-btn{
+    flex-shrink:0;
+    margin-top:2px;
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:999px;
+    padding:7px 12px;
+    font-size:12px;
+    font-weight:700;
+    color:var(--ink-soft);
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .admin-btn.on{
+    background:var(--ink);
+    color:#fff;
+    border-color:var(--ink);
+  }
+
+  /* ---------- 히어로 (오늘 카드) ---------- */
+  .hero{
+    max-width:720px;
+    margin:0 auto;
+    padding:0 18px;
+  }
+  .hero-card{
+    background:linear-gradient(135deg, var(--sky) 0%, #7B9EF0 100%);
+    border-radius:22px;
+    padding:22px;
+    color:#fff;
+    position:relative;
+    overflow:hidden;
+    box-shadow:var(--shadow);
+  }
+  .hero-card::after{
+    content:"";
+    position:absolute; right:-40px; bottom:-40px;
+    width:160px;height:160px;border-radius:50%;
+    background:rgba(255,255,255,0.10);
+  }
+  .hero-top{display:flex; justify-content:space-between; align-items:flex-start;}
+  .hero-date{font-size:14px; opacity:0.9;}
+  .hero-period{
+    font-family:'Jua', sans-serif;
+    font-size:34px;
+    margin-top:4px;
+  }
+  .hero-sub{font-size:14px; opacity:0.95; margin-top:2px;}
+  .hero-ring{
+    width:64px;height:64px;border-radius:50%;
+    background:rgba(255,255,255,0.16);
+    display:flex; align-items:center; justify-content:center;
+    font-size:22px;
+    flex-shrink:0;
+  }
+  .hero-meals{
+    margin-top:16px;
+    background:rgba(255,255,255,0.14);
+    border-radius:14px;
+    padding:10px 14px;
+    font-size:13.5px;
+    line-height:1.55;
+    position:relative;
+    z-index:1;
+  }
+  .hero-meals b{font-family:'Jua'; font-weight:400; font-size:14px;}
+
+  /* ---------- 디데이 스티커 목록 ---------- */
+  .dday-row{
+    display:flex; gap:10px; overflow-x:auto;
+    padding:14px 18px 4px;
+    max-width:720px; margin:0 auto;
+    scrollbar-width:none;
+  }
+  .dday-row::-webkit-scrollbar{display:none;}
+  .sticky{
+    flex:0 0 auto;
+    min-width:104px;
+    padding:12px 12px 10px;
+    border-radius:4px 4px 10px 10px;
+    box-shadow:var(--shadow-sm);
+    position:relative;
+    font-family:'Gaegu', sans-serif;
+  }
+  .sticky::before{
+    content:"";
+    position:absolute; top:-7px; left:50%; transform:translateX(-50%) rotate(-4deg);
+    width:46px; height:16px;
+    background:rgba(255,255,255,0.65);
+    border:1px solid rgba(255,255,255,0.8);
+  }
+  .sticky.pink{background:#FFE1E6; color:#B3384A; transform:rotate(-2deg);}
+  .sticky.yellow{background:#FFF3CE; color:#966A18; transform:rotate(2deg);}
+  .sticky.mint{background:#D9F5EC; color:#12735D; transform:rotate(-1.5deg);}
+  .sticky .dday-label{font-size:13px; font-weight:700;}
+  .sticky .dday-num{font-size:24px; font-weight:700; margin-top:2px;}
+  .sticky .dday-date{font-size:11.5px; opacity:0.8; margin-top:1px;}
+
+  /* ---------- 탭바 ---------- */
+  .tabbar{
+    max-width:720px; margin:18px auto 0;
+    padding:0 18px;
+    display:flex; gap:8px;
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+  .tabbar::-webkit-scrollbar{display:none;}
+  .tab-btn{
+    flex:0 0 auto;
+    font-family:'Noto Sans KR'; font-weight:700; font-size:13.5px;
+    padding:9px 15px;
+    border-radius:999px;
+    border:1.5px solid var(--line);
+    background:#fff;
+    color:var(--ink-soft);
+    cursor:pointer;
+    white-space:nowrap;
+    transition:all .15s ease;
+  }
+  .tab-btn.active{
+    background:var(--ink);
+    color:#fff;
+    border-color:var(--ink);
+  }
+
+  /* ---------- 섹션 공통 ---------- */
+  .section{
+    max-width:720px; margin:0 auto;
+    padding:16px 18px 10px;
+    display:none;
+  }
+  .section.active{display:block;}
+  .card{
+    background:var(--card);
+    border-radius:16px;
+    padding:16px;
+    box-shadow:var(--shadow-sm);
+    margin-bottom:14px;
+  }
+  .card h3{
+    font-size:17px; margin:0 0 10px;
+    display:flex; align-items:center; gap:6px;
+  }
+  .muted{color:var(--ink-soft); font-size:13px;}
+
+  /* ---------- 시간표 ---------- */
+  .tt-wrap{overflow-x:auto;}
+  table.tt{
+    width:100%; border-collapse:collapse; font-size:12.5px; min-width:480px;
+  }
+  table.tt th, table.tt td{
+    border:1px solid var(--line);
+    text-align:center;
+    padding:8px 4px;
+  }
+  table.tt th{
+    background:var(--paper2);
+    font-weight:700;
+    font-size:12px;
+  }
+  table.tt td.period-no{
+    background:var(--paper2);
+    font-weight:700;
+    color:var(--ink-soft);
+    width:34px;
+  }
+  table.tt td.today-col{background:#FFF7E0;}
+  table.tt td.now-cell{
+    background:var(--sun);
+    color:#5A3E00;
+    font-weight:700;
+    border-radius:6px;
+  }
+
+  /* ---------- 급식 ---------- */
+  .meal-item{
+    display:flex; gap:12px;
+    padding:10px 0;
+    border-bottom:1px dashed var(--line);
+  }
+  .meal-item:last-child{border-bottom:none;}
+  .meal-day{
+    width:44px; flex-shrink:0;
+    font-family:'Jua'; font-size:15px; text-align:center;
+    color:var(--sky-deep);
+  }
+  .meal-day.today{color:var(--coral-deep);}
+  .meal-menu{font-size:13.5px; line-height:1.6; color:var(--ink);}
+
+  /* ---------- 공지 ---------- */
+  .notice{
+    border-radius:12px;
+    padding:12px 14px;
+    margin-bottom:10px;
+    background:var(--paper2);
+    border-left:4px solid var(--sky);
+    position:relative;
+  }
+  .notice.pinned{
+    background:#FFF1EC;
+    border-left-color:var(--coral);
+  }
+  .notice-top{display:flex; justify-content:space-between; align-items:center; gap:8px;}
+  .notice-title{font-weight:700; font-size:14.5px;}
+  .notice-meta{font-size:11.5px; color:var(--ink-soft); margin-top:2px;}
+  .notice-body{font-size:13.5px; margin-top:6px; line-height:1.55; white-space:pre-wrap;}
+  .pin-badge{
+    font-size:11px; background:var(--coral); color:#fff;
+    padding:2px 7px; border-radius:999px; flex-shrink:0;
+  }
+
+  /* ---------- 준비물 리스트 ---------- */
+  .prep-item{
+    display:flex; align-items:center; gap:10px;
+    padding:9px 0;
+    border-bottom:1px dashed var(--line);
+    font-size:13.5px;
+  }
+  .prep-item:last-child{border-bottom:none;}
+  .prep-dday{
+    font-family:'Jua'; font-size:13px;
+    background:var(--mint); color:#fff;
+    padding:3px 8px; border-radius:8px;
+    flex-shrink:0; min-width:44px; text-align:center;
+  }
+  .prep-dday.urgent{background:var(--coral);}
+  .prep-item .prep-body{flex:1;}
+
+  /* ---------- 캘린더 리스트 ---------- */
+  .cal-item{
+    display:flex; align-items:center; gap:12px;
+    padding:11px 0;
+    border-bottom:1px dashed var(--line);
+  }
+  .cal-item:last-child{border-bottom:none;}
+  .cal-dday{
+    font-family:'Jua'; font-size:16px;
+    width:52px; text-align:center; flex-shrink:0;
+    color:var(--coral-deep);
+  }
+  .cal-info{flex:1;}
+  .cal-info .cal-title{font-weight:700; font-size:14px;}
+  .cal-info .cal-date{font-size:12px; color:var(--ink-soft);}
+  .tag{
+    font-size:10.5px; padding:2px 7px; border-radius:999px;
+    margin-right:6px; font-weight:700;
+  }
+  .tag.exam{background:#FFE1E6; color:#B3384A;}
+  .tag.assign{background:#DCEBFF; color:#2857A3;}
+  .tag.event{background:#FFF3CE; color:#966A18;}
+  .tag.material{background:#E4E1FA; color:#4A3FA0;}
+
+  /* ---------- 자료실 ---------- */
+  .material-item{
+    display:flex; gap:12px; align-items:flex-start;
+    padding:11px 0;
+    border-bottom:1px dashed var(--line);
+  }
+  .material-item:last-child{border-bottom:none;}
+  .material-emoji{font-size:22px; width:32px; text-align:center; flex-shrink:0;}
+  .material-body{flex:1;}
+  .material-title{font-weight:700; font-size:14px;}
+  .material-desc{font-size:13px; color:var(--ink-soft); margin-top:3px; line-height:1.5;}
+  .material-link{
+    display:inline-block; margin-top:6px;
+    font-size:12.5px; font-weight:700;
+    color:var(--sky-deep); text-decoration:none;
+    background:var(--paper2); padding:5px 10px; border-radius:8px;
+  }
+
+  /* ---------- 삭제 버튼 / 관리자 폼 ---------- */
+  .del-btn{
+    flex-shrink:0;
+    background:none; border:none;
+    color:var(--ink-soft);
+    font-size:12px;
+    cursor:pointer;
+    padding:4px 6px;
+  }
+  .del-btn:hover{color:var(--coral-deep);}
+  .item-row{display:flex; align-items:flex-start; gap:6px;}
+  .item-row > div:first-child{flex:1;}
+  .admin-only{display:none;}
+  .admin-lock-msg{font-size:12.5px; color:var(--ink-soft); background:var(--paper2); border-radius:10px; padding:10px 12px;}
+
+  /* ---------- 투표 ---------- */
+  .poll-q{font-weight:700; font-size:15px; margin-bottom:12px;}
+  .poll-opt{
+    margin-bottom:9px;
+  }
+  .poll-btn{
+    width:100%;
+    text-align:left;
+    background:var(--paper2);
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    padding:10px 12px;
+    font-size:13.5px;
+    cursor:pointer;
+    position:relative;
+    overflow:hidden;
+    font-family:'Noto Sans KR';
+  }
+  .poll-btn .fill{
+    position:absolute; left:0; top:0; bottom:0;
+    background:rgba(91,141,239,0.18);
+    z-index:0;
+  }
+  .poll-btn .label{position:relative; z-index:1; display:flex; justify-content:space-between;}
+  .poll-btn:disabled{cursor:default;}
+  .poll-total{font-size:12px; color:var(--ink-soft); margin-top:6px;}
+
+  /* ---------- 폼 ---------- */
+  .form-row{margin-bottom:9px;}
+  .form-row input, .form-row textarea, .form-row select{
+    width:100%;
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    padding:9px 11px;
+    font-size:13.5px;
+    font-family:'Noto Sans KR';
+    resize:vertical;
+  }
+  .btn{
+    background:var(--ink); color:#fff;
+    border:none; border-radius:10px;
+    padding:9px 16px; font-size:13.5px; font-weight:700;
+    cursor:pointer;
+  }
+  .btn.coral{background:var(--coral-deep);}
+  .btn.mint{background:var(--mint-deep);}
+  .btn.sky{background:var(--sky-deep);}
+  .btn:active{transform:scale(0.98);}
+
+  /* ---------- 하단 탭 네비 ---------- */
+  .bottom-nav{
+    position:fixed; left:0; right:0; bottom:0;
+    background:#fff;
+    border-top:1px solid var(--line);
+    display:flex; justify-content:space-around;
+    padding:6px 4px 8px;
+    box-shadow:0 -6px 16px rgba(43,42,61,0.06);
+    z-index:20;
+  }
+  .nav-btn{
+    background:none; border:none; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    font-family:'Noto Sans KR'; font-size:10px; color:var(--ink-soft);
+    padding:4px 6px;
+  }
+  .nav-btn .ic{font-size:18px;}
+  .nav-btn.active{color:var(--coral-deep); font-weight:700;}
+
+  .footer-note{
+    max-width:720px; margin:10px auto 0; padding:0 18px;
+    font-size:11px; color:var(--ink-soft); text-align:center;
+  }
+
+  @media (max-width:400px){
+    .hero-period{font-size:28px;}
+  }
+
+  /* ---------- 모달 (관리자 로그인/확인창) ---------- */
+  .modal-overlay{
+    position:fixed; inset:0;
+    background:rgba(43,42,61,0.45);
+    display:none; align-items:center; justify-content:center;
+    z-index:100; padding:20px;
+  }
+  .modal-overlay.show{display:flex;}
+  .modal-box{
+    background:#fff; border-radius:16px; padding:20px;
+    max-width:320px; width:100%;
+    box-shadow:var(--shadow);
+  }
+  .modal-box h4{margin:0 0 12px; font-size:16px; font-family:'Jua', sans-serif; font-weight:400;}
+  .modal-box p{font-size:13.5px; color:var(--ink); margin:0 0 16px; line-height:1.55;}
+  .modal-box input{
+    width:100%; border:1.5px solid var(--line); border-radius:10px;
+    padding:9px 11px; font-size:13.5px; margin-bottom:16px;
+    font-family:'Noto Sans KR';
+  }
+  .modal-actions{display:flex; gap:8px; justify-content:flex-end;}
+  .modal-actions button{
+    border:none; border-radius:10px; padding:8px 14px;
+    font-size:13px; font-weight:700; cursor:pointer;
+    font-family:'Noto Sans KR';
+  }
+  .modal-actions .cancel{background:var(--paper2); color:var(--ink-soft);}
+  .modal-actions .ok{background:var(--coral-deep); color:#fff;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <div class="class-name">괴정고등학교 · 1학년 9반</div>
+    <div class="app-title"><span class="pin-dot"></span>아구뽀 알리미 <span style="font-size:12px; color:var(--ink-soft); font-family:'Noto Sans KR'; margin-left:2px;">beta</span></div>
+  </div>
+  <button class="admin-btn" id="adminBtn" onclick="toggleAdmin()">🔒 관리자</button>
+</div>
+
+<div class="hero">
+  <div class="hero-card">
+    <div class="hero-top">
+      <div>
+        <div class="hero-date" id="heroDate">-</div>
+        <div class="hero-period" id="heroPeriod">불러오는 중...</div>
+        <div class="hero-sub" id="heroSub"></div>
+      </div>
+      <div class="hero-ring" id="heroRing">🏫</div>
+    </div>
+    <div class="hero-meals">
+      <b>🍚 오늘 급식</b><br>
+      <span id="heroMeal">불러오는 중...</span>
+    </div>
+  </div>
+</div>
+
+<div class="dday-row" id="ddayRow"></div>
+
+<div class="tabbar" id="tabbar">
+  <button class="tab-btn" data-tab="home">🏠 홈</button>
+  <button class="tab-btn" data-tab="timetable">🗓️ 시간표</button>
+  <button class="tab-btn" data-tab="meal">🍚 급식</button>
+  <button class="tab-btn" data-tab="notice">📢 공지·준비물</button>
+  <button class="tab-btn" data-tab="calendar">📌 일정</button>
+  <button class="tab-btn" data-tab="material">📁 자료</button>
+  <button class="tab-btn" data-tab="poll">🗳️ 투표</button>
+</div>
+
+<!-- 홈 -->
+<section class="section" id="tab-home">
+  <div class="card">
+    <h3>📢 최근 공지</h3>
+    <div id="homeNotices"></div>
+  </div>
+  <div class="card">
+    <h3>📌 다가오는 일정</h3>
+    <div id="homeCalendar"></div>
+  </div>
+</section>
+
+<!-- 시간표 -->
+<section class="section" id="tab-timetable">
+  <div class="card">
+    <h3>🗓️ 이번 주 시간표</h3>
+    <div class="tt-wrap">
+      <table class="tt" id="ttTable"></table>
+    </div>
+    <p class="muted" style="margin-top:8px;">현재 진행 중인 교시가 노란색으로 표시돼요.</p>
+  </div>
+</section>
+
+<!-- 급식 -->
+<section class="section" id="tab-meal">
+  <div class="card">
+    <h3>🍚 이번 주 급식</h3>
+    <div id="mealList"></div>
+  </div>
+</section>
+
+<!-- 공지 + 준비물 -->
+<section class="section" id="tab-notice">
+  <div class="card">
+    <h3>📢 공지사항</h3>
+    <div id="noticeList"></div>
+    <div class="admin-only" data-admin-el>
+      <details style="margin-top:10px;">
+        <summary class="muted" style="cursor:pointer;">✏️ 공지 작성하기</summary>
+        <div style="margin-top:10px;">
+          <div class="form-row"><input id="noticeTitleInput" placeholder="제목"></div>
+          <div class="form-row"><textarea id="noticeBodyInput" rows="3" placeholder="내용을 입력하세요"></textarea></div>
+          <label class="muted" style="display:flex; align-items:center; gap:6px; margin-bottom:8px;">
+            <input type="checkbox" id="noticePinInput" style="width:auto;"> 상단 고정
+          </label>
+          <button class="btn coral" onclick="addNotice()">등록하기</button>
+        </div>
+      </details>
+    </div>
+  </div>
+  <div class="card">
+    <h3>🎒 준비물 D-day</h3>
+    <div id="prepList"></div>
+    <div class="admin-only" data-admin-el>
+      <details style="margin-top:10px;">
+        <summary class="muted" style="cursor:pointer;">✏️ 준비물 추가하기</summary>
+        <div style="margin-top:10px;">
+          <div class="form-row"><input id="prepSubjectInput" placeholder="과목 (예: 미술)"></div>
+          <div class="form-row"><input id="prepItemInput" placeholder="준비물 (예: 스케치북, 4B연필)"></div>
+          <div class="form-row"><input id="prepDateInput" type="date"></div>
+          <button class="btn mint" onclick="addPrep()">등록하기</button>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- 일정 -->
+<section class="section" id="tab-calendar">
+  <div class="card">
+    <h3>📌 시험 · 과제 · 행사</h3>
+    <div id="calList"></div>
+    <div class="admin-only" data-admin-el>
+      <details style="margin-top:10px;">
+        <summary class="muted" style="cursor:pointer;">✏️ 일정 추가하기</summary>
+        <div style="margin-top:10px;">
+          <div class="form-row"><input id="calTitleInput" placeholder="일정 제목"></div>
+          <div class="form-row"><input id="calDateInput" type="date"></div>
+          <div class="form-row">
+            <select id="calTypeInput">
+              <option value="exam">시험</option>
+              <option value="assign">과제</option>
+              <option value="event">행사</option>
+            </select>
+          </div>
+          <button class="btn sky" onclick="addCal()">등록하기</button>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- 자료 -->
+<section class="section" id="tab-material">
+  <div class="card">
+    <h3>📁 수업 자료 · 시험 정리 노트</h3>
+    <p class="muted" style="margin-top:-4px; margin-bottom:10px;">학습지·정리노트는 구글드라이브 등에 올린 뒤 공유 링크를 등록해주세요.</p>
+    <div id="materialList"></div>
+    <div class="admin-only" data-admin-el>
+      <details style="margin-top:10px;">
+        <summary class="muted" style="cursor:pointer;">✏️ 자료 등록하기</summary>
+        <div style="margin-top:10px;">
+          <div class="form-row"><input id="matTitleInput" placeholder="자료 제목 (예: 수학 3단원 정리노트)"></div>
+          <div class="form-row"><input id="matSubjectInput" placeholder="과목 (선택)"></div>
+          <div class="form-row"><textarea id="matDescInput" rows="2" placeholder="설명 (선택)"></textarea></div>
+          <div class="form-row"><input id="matLinkInput" placeholder="링크 URL (예: https://drive.google.com/...)"></div>
+          <button class="btn coral" onclick="addMaterial()">등록하기</button>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- 투표 -->
+<section class="section" id="tab-poll">
+  <div class="card">
+    <h3>🗳️ 우리반 투표</h3>
+    <div class="poll-q" id="pollQ"></div>
+    <div id="pollOpts"></div>
+    <div class="poll-total" id="pollTotal"></div>
+    <div class="admin-only" data-admin-el>
+      <details style="margin-top:14px;">
+        <summary class="muted" style="cursor:pointer;">✏️ 새 투표 만들기 (기존 투표·결과 초기화)</summary>
+        <div style="margin-top:10px;">
+          <div class="form-row"><input id="pollQInput" placeholder="투표 질문"></div>
+          <div class="form-row"><input id="pollOptsInput" placeholder="선택지 (쉼표로 구분, 예: 피구,축구,줄다리기)"></div>
+          <button class="btn coral" onclick="setNewPoll()">투표 새로 시작하기</button>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<div class="footer-note">✏️ 시간표·날짜 등은 앱 코드 상단 CONFIG에서 바꿀 수 있어요. 공지·일정·준비물·자료·투표는 우측 상단 🔒 관리자 로그인 후 이 화면에서 바로 추가·삭제할 수 있어요.</div>
+
+<div class="bottom-nav" id="bottomNav">
+  <button class="nav-btn" data-tab="home"><span class="ic">🏠</span>홈</button>
+  <button class="nav-btn" data-tab="timetable"><span class="ic">🗓️</span>시간표</button>
+  <button class="nav-btn" data-tab="notice"><span class="ic">📢</span>공지</button>
+  <button class="nav-btn" data-tab="calendar"><span class="ic">📌</span>일정</button>
+  <button class="nav-btn" data-tab="material"><span class="ic">📁</span>자료</button>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this) closeModal()">
+  <div class="modal-box" id="modalBox"></div>
+</div>
+
+<script>
+/* ======================================================================
+   CONFIG — 여기 데이터만 바꾸면 우리반에 맞게 커스터마이징 가능합니다.
+   ====================================================================== */
+const CONFIG = {
+  className: "괴정고등학교 · 1학년 9반",
+
+  // 관리자 비밀번호 — 원하는 걸로 꼭 바꿔서 사용하세요!
+  adminPassword: "383204",
+
+  // 요일별 시간표: [1교시, 2교시, ... 7교시]
+  timetable: {
+    "월": ["미술","영어","사회","한국사","생과탐","과탐실",""],
+    "화": ["영어","화학","수학","국어","사회","국어","체육"],
+    "수": ["미술","미술","물리","생명","사회","한국사",""],
+    "목": ["생과탐","영어","지구","체육","수학","한국사","진로"],
+    "금": ["생과탐","수학","국어","사회","창체","창체",""]
+  },
+  periodTimes: [
+    {start:"08:30", end:"09:20"},
+    {start:"09:30", end:"10:20"},
+    {start:"10:30", end:"11:20"},
+    {start:"11:30", end:"12:20"},
+    {start:"13:20", end:"14:10"},
+    {start:"14:20", end:"15:10"},
+    {start:"15:20", end:"16:10"}
+  ],
+  lunchAfterPeriod: 4, // 4교시 이후 점심시간
+
+  meals: {
+    "월": "잡곡밥 / 미역국 / 제육볶음 / 계란말이 / 배추김치",
+    "화": "흑미밥 / 어묵국 / 닭갈비 / 감자조림 / 깍두기",
+    "수": "카레라이스 / 유부장국 / 치킨너겟 / 요거트 / 단무지",
+    "목": "잡곡밥 / 순두부찌개 / 불고기 / 시금치나물 / 김치",
+    "금": "볶음밥 / 짬뽕국 / 탕수육 / 미니핫도그 / 무생채"
+  },
+
+  // D-day 위젯 (하드코딩 날짜, 필요시 수정)
+  ddays: [
+    {label:"9월 모의고사", date:"2026-09-02", color:"mint"},
+    {label:"중간고사", date:"2026-10-14", color:"pink"},
+    {label:"기말고사", date:"2026-12-09", color:"pink"},
+    {label:"학교 축제", date:"2026-12-24", color:"yellow"},
+    {label:"겨울방학식", date:"2026-12-31", color:"mint"}
+  ],
+
+  // 공지사항 초기 샘플 데이터
+  notices: [
+    {title:"반장선거 공약 안내", body:"이번 주 반장선거 후보 공약을 이 앱으로 확인할 수 있어요! 궁금한 점은 댓글 대신 직접 물어봐주세요 :)", pinned:true, author:"학급회", date:"08-18"},
+    {title:"체육대회 종목 투표 진행중", body:"아래 투표 탭에서 우리반 대표 종목에 투표해주세요. 목요일 종례 전까지 마감입니다.", pinned:false, author:"체육부장", date:"08-18"},
+    {title:"교실 청소 구역 안내문 게시", body:"이번 주부터 청소 구역이 일부 변경되었습니다. 게시판 확인 부탁드려요.", pinned:false, author:"환경부장", date:"08-17"}
+  ],
+
+  // 준비물 (D-day는 날짜 기준 자동 계산)
+  preps: [
+    {subject:"미술", item:"스케치북, 4B연필", date:"2026-08-20"},
+    {subject:"체육", item:"체육복, 운동화", date:"2026-08-19"},
+    {subject:"정보", item:"개인 USB", date:"2026-08-21"},
+    {subject:"통합과학", item:"실험보고서 양식 출력", date:"2026-08-22"}
+  ],
+
+  // 시험/과제/행사 캘린더
+  calendar: [
+    {title:"9월 모의고사", date:"2026-09-02", type:"exam"},
+    {title:"10월 모의고사", date:"2026-10-20", type:"exam"},
+    {title:"2학기 중간고사 시작", date:"2026-10-14", type:"exam"},
+    {title:"2학기 기말고사 시작", date:"2026-12-09", type:"exam"},
+    {title:"학교 축제", date:"2026-12-24", type:"event"},
+    {title:"겨울방학식", date:"2026-12-31", type:"event"}
+  ],
+
+  // 자료실 초기 샘플 데이터
+  materials: [
+    {title:"수학 2단원 학습지", subject:"수학", desc:"수업시간에 나눠준 학습지 스캔본입니다.", link:"https://drive.google.com", date:"08-18"},
+    {title:"중간고사 대비 한국사 정리노트", subject:"한국사", desc:"제가 직접 정리한 노트예요, 자유롭게 참고하세요!", link:"https://drive.google.com", date:"08-18"}
+  ],
+
+  // 투표
+  poll: {
+    question: "이번 체육대회, 우리반 대표 종목은?",
+    options: ["피구","축구","줄다리기","이어달리기"]
+  }
+};
+
+/* ====================== 유틸 ====================== */
+const DAY_NAMES = ["일","월","화","수","목","금","토"];
+function todayKey(){ return DAY_NAMES[new Date().getDay()]; }
+function pad(n){ return n<10 ? "0"+n : ""+n; }
+function fmtDate(d){ return `${d.getMonth()+1}월 ${d.getDate()}일 (${DAY_NAMES[d.getDay()]})`; }
+function daysUntil(dateStr){
+  const target = new Date(dateStr+"T00:00:00");
+  const now = new Date();
+  now.setHours(0,0,0,0);
+  const diff = Math.round((target-now)/86400000);
+  return diff;
+}
+function ddayText(n){
+  if(n===0) return "D-DAY";
+  if(n>0) return "D-"+n;
+  return "D+"+Math.abs(n);
+}
+function lsGet(key, fallback){
+  try{
+    const v = localStorage.getItem(key);
+    return v ? JSON.parse(v) : fallback;
+  }catch(e){ return fallback; }
+}
+function lsSet(key, val){
+  try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
+}
+function escapeHtml(str){
+  return (str||"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+/* ====================== 모달 (관리자 로그인/확인창) ======================
+   일부 브라우저·미리보기 환경에서는 window.prompt/confirm/alert이
+   차단될 수 있어서, 화면 안에서 동작하는 모달로 대체합니다. */
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('show');
+}
+function showPromptModal(title, placeholder, callback, isPassword){
+  const box = document.getElementById('modalBox');
+  box.innerHTML = `<h4>${title}</h4>
+    <input type="${isPassword?'password':'text'}" id="modalInput" placeholder="${placeholder||''}">
+    <div class="modal-actions">
+      <button class="cancel" type="button" onclick="closeModal()">취소</button>
+      <button class="ok" type="button" id="modalOkBtn">확인</button>
+    </div>`;
+  document.getElementById('modalOverlay').classList.add('show');
+  const input = document.getElementById('modalInput');
+  setTimeout(()=> input.focus(), 50);
+  const submit = ()=>{ const v = input.value; closeModal(); callback(v); };
+  document.getElementById('modalOkBtn').onclick = submit;
+  input.onkeydown = (e)=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } };
+}
+function showConfirmModal(message, callback){
+  const box = document.getElementById('modalBox');
+  box.innerHTML = `<p>${message}</p>
+    <div class="modal-actions">
+      <button class="cancel" type="button" onclick="closeModal()">취소</button>
+      <button class="ok" type="button" id="modalOkBtn">확인</button>
+    </div>`;
+  document.getElementById('modalOverlay').classList.add('show');
+  document.getElementById('modalOkBtn').onclick = ()=>{ closeModal(); callback(); };
+}
+function showAlertModal(message){
+  const box = document.getElementById('modalBox');
+  box.innerHTML = `<p>${message}</p>
+    <div class="modal-actions">
+      <button class="ok" type="button" id="modalOkBtn">확인</button>
+    </div>`;
+  document.getElementById('modalOverlay').classList.add('show');
+  document.getElementById('modalOkBtn').onclick = closeModal;
+}
+
+/* ====================== 관리자 로그인 ====================== */
+function isAdmin(){ return lsGet('classapp_admin', false) === true; }
+function toggleAdmin(){
+  if(isAdmin()){
+    showConfirmModal("관리자 모드를 종료할까요?", ()=>{
+      lsSet('classapp_admin', false);
+      updateAdminUI();
+    });
+    return;
+  }
+  showPromptModal("🔒 관리자 로그인", "비밀번호를 입력하세요", (pw)=>{
+    if(!pw) return;
+    if(pw === CONFIG.adminPassword){
+      lsSet('classapp_admin', true);
+      updateAdminUI();
+      showAlertModal("관리자 모드로 전환됐어요. 이제 공지·일정·준비물·자료·투표를 추가/삭제할 수 있어요.");
+    } else {
+      showAlertModal("비밀번호가 올바르지 않아요.");
+    }
+  }, true);
+}
+function updateAdminUI(){
+  const admin = isAdmin();
+  const btn = document.getElementById('adminBtn');
+  btn.textContent = admin ? "🔓 관리자 모드" : "🔒 관리자";
+  btn.classList.toggle('on', admin);
+  document.querySelectorAll('[data-admin-el]').forEach(el=>{
+    el.style.display = admin ? 'block' : 'none';
+  });
+  // 다시 렌더링해서 삭제버튼 표시 여부 갱신
+  renderNotices();
+  renderPreps();
+  renderCalendar();
+  renderMaterials();
+  renderPoll();
+}
+
+/* ====================== 히어로: 현재 교시 ====================== */
+function renderHero(){
+  const now = new Date();
+  document.getElementById('heroDate').textContent = fmtDate(now) + " · " + CONFIG.className.split("·")[1];
+  const dk = todayKey();
+  const hhmm = pad(now.getHours())+":"+pad(now.getMinutes());
+  let periodText = "";
+  let subText = "";
+  let ring = "🏫";
+
+  if(!CONFIG.timetable[dk]){
+    periodText = "주말이에요";
+    subText = "편안한 하루 보내세요 🌿";
+    ring = "🌤️";
+  } else {
+    const times = CONFIG.periodTimes;
+    let found = false;
+    for(let i=0;i<times.length;i++){
+      if(hhmm>=times[i].start && hhmm<times[i].end){
+        const subj = CONFIG.timetable[dk][i] || "-";
+        periodText = `${i+1}교시 진행 중`;
+        subText = `${subj} 수업 (${times[i].start}~${times[i].end})`;
+        ring = "📖";
+        found = true;
+        break;
+      }
+    }
+    if(!found){
+      // 쉬는시간/점심/등교전/하교후 판별
+      if(hhmm < times[0].start){
+        periodText = "등교 전";
+        subText = `1교시는 ${times[0].start}에 시작해요`;
+        ring = "🌅";
+      } else if(hhmm >= times[times.length-1].end){
+        periodText = "하교 후";
+        subText = "오늘 하루도 수고했어요 👏";
+        ring = "🌆";
+      } else {
+        // 쉬는시간 or 점심
+        for(let i=0;i<times.length-1;i++){
+          if(hhmm>=times[i].end && hhmm<times[i+1].start){
+            if(i+1 === CONFIG.lunchAfterPeriod){
+              periodText = "점심시간";
+              subText = "맛있게 먹어요 🍚";
+              ring = "🍱";
+            } else {
+              periodText = "쉬는시간";
+              subText = `다음은 ${i+2}교시 ${CONFIG.timetable[dk][i+1]||""}`;
+              ring = "☕";
+            }
+            found = true;
+            break;
+          }
+        }
+      }
+    }
+  }
+  document.getElementById('heroPeriod').textContent = periodText;
+  document.getElementById('heroSub').textContent = subText;
+  document.getElementById('heroRing').textContent = ring;
+  document.getElementById('heroMeal').textContent = CONFIG.meals[dk] || "급식이 없는 날이에요";
+}
+
+/* ====================== D-day 스티커 ====================== */
+function renderDday(){
+  const row = document.getElementById('ddayRow');
+  row.innerHTML = "";
+  CONFIG.ddays.forEach(d=>{
+    const n = daysUntil(d.date);
+    const el = document.createElement('div');
+    el.className = "sticky " + d.color;
+    const dt = new Date(d.date+"T00:00:00");
+    el.innerHTML = `<div class="dday-label">${d.label}</div>
+      <div class="dday-num">${ddayText(n)}</div>
+      <div class="dday-date">${dt.getMonth()+1}.${dt.getDate()}</div>`;
+    row.appendChild(el);
+  });
+}
+
+/* ====================== 시간표 ====================== */
+function renderTimetable(){
+  const days = Object.keys(CONFIG.timetable);
+  const dk = todayKey();
+  const now = new Date();
+  const hhmm = pad(now.getHours())+":"+pad(now.getMinutes());
+  let currentPeriodIdx = -1;
+  CONFIG.periodTimes.forEach((t,i)=>{
+    if(hhmm>=t.start && hhmm<t.end) currentPeriodIdx = i;
+  });
+
+  let html = "<tr><th>교시</th>" + days.map(d=>`<th${d===dk?' style="color:var(--coral-deep)"':''}>${d}</th>`).join("") + "</tr>";
+  for(let p=0;p<7;p++){
+    html += `<tr><td class="period-no">${p+1}</td>`;
+    days.forEach(d=>{
+      const subj = CONFIG.timetable[d][p] || "-";
+      const isToday = d===dk;
+      const isNow = isToday && p===currentPeriodIdx;
+      html += `<td class="${isToday?'today-col':''} ${isNow?'now-cell':''}">${subj}</td>`;
+    });
+    html += "</tr>";
+  }
+  document.getElementById('ttTable').innerHTML = html;
+}
+
+/* ====================== 급식 ====================== */
+function renderMeal(){
+  const dk = todayKey();
+  const el = document.getElementById('mealList');
+  el.innerHTML = "";
+  Object.entries(CONFIG.meals).forEach(([day,menu])=>{
+    const div = document.createElement('div');
+    div.className = "meal-item";
+    div.innerHTML = `<div class="meal-day ${day===dk?'today':''}">${day}</div><div class="meal-menu">${menu}</div>`;
+    el.appendChild(div);
+  });
+}
+
+/* ====================== 공지사항 (localStorage) ====================== */
+function getNotices(){
+  return lsGet('classapp_notices', CONFIG.notices);
+}
+function saveNotices(list){ lsSet('classapp_notices', list); }
+
+function renderNotices(){
+  const admin = isAdmin();
+  const full = getNotices();
+  const order = full.map((n,i)=>i).sort((a,b)=> (full[b].pinned - full[a].pinned));
+  const el = document.getElementById('noticeList');
+  el.innerHTML = "";
+  if(order.length===0){ el.innerHTML = '<p class="muted">등록된 공지가 없어요</p>'; }
+  order.forEach(idx=>{
+    const n = full[idx];
+    const row = document.createElement('div');
+    row.className = "item-row";
+    const div = document.createElement('div');
+    div.className = "notice" + (n.pinned ? " pinned":"");
+    div.innerHTML = `
+      <div class="notice-top">
+        <div class="notice-title">${n.pinned?'📌 ':''}${escapeHtml(n.title)}</div>
+        ${n.pinned?'<span class="pin-badge">고정</span>':''}
+      </div>
+      <div class="notice-meta">${escapeHtml(n.author||'익명')} · ${n.date||''}</div>
+      <div class="notice-body">${escapeHtml(n.body)}</div>
+    `;
+    row.appendChild(div);
+    if(admin){
+      const btn = document.createElement('button');
+      btn.className = "del-btn"; btn.textContent = "삭제";
+      btn.onclick = ()=> deleteNotice(idx);
+      row.appendChild(btn);
+    }
+    el.appendChild(row);
+  });
+
+  // 홈 탭 미리보기 (최대 2개)
+  const homeEl = document.getElementById('homeNotices');
+  homeEl.innerHTML = "";
+  order.slice(0,2).forEach(idx=>{
+    const n = full[idx];
+    const div = document.createElement('div');
+    div.className = "notice" + (n.pinned ? " pinned":"");
+    div.innerHTML = `<div class="notice-title">${n.pinned?'📌 ':''}${escapeHtml(n.title)}</div>
+      <div class="notice-body">${escapeHtml(n.body)}</div>`;
+    homeEl.appendChild(div);
+  });
+  if(order.length===0){ homeEl.innerHTML = '<p class="muted">등록된 공지가 없어요</p>'; }
+}
+function addNotice(){
+  if(!isAdmin()) return;
+  const title = document.getElementById('noticeTitleInput').value.trim();
+  const body = document.getElementById('noticeBodyInput').value.trim();
+  const pinned = document.getElementById('noticePinInput').checked;
+  if(!title || !body){ showAlertModal("제목과 내용을 모두 입력해주세요."); return; }
+  const list = getNotices();
+  const now = new Date();
+  list.unshift({title, body, pinned, author:"반장", date:`${now.getMonth()+1}-${now.getDate()}`});
+  saveNotices(list);
+  document.getElementById('noticeTitleInput').value = "";
+  document.getElementById('noticeBodyInput').value = "";
+  document.getElementById('noticePinInput').checked = false;
+  renderNotices();
+}
+function deleteNotice(idx){
+  if(!isAdmin()) return;
+  showConfirmModal("이 공지를 삭제할까요?", ()=>{
+    const list = getNotices();
+    list.splice(idx,1);
+    saveNotices(list);
+    renderNotices();
+  });
+}
+
+/* ====================== 준비물 (localStorage) ====================== */
+function getPreps(){ return lsGet('classapp_preps', CONFIG.preps); }
+function savePreps(list){ lsSet('classapp_preps', list); }
+
+function renderPreps(){
+  const admin = isAdmin();
+  const full = getPreps();
+  const order = full.map((p,i)=>i).sort((a,b)=> daysUntil(full[a].date)-daysUntil(full[b].date));
+  const el = document.getElementById('prepList');
+  el.innerHTML = "";
+  if(order.length===0){ el.innerHTML = '<p class="muted">등록된 준비물이 없어요</p>'; return; }
+  order.forEach(idx=>{
+    const p = full[idx];
+    const n = daysUntil(p.date);
+    const row = document.createElement('div');
+    row.className = "prep-item item-row";
+    row.innerHTML = `<div class="prep-body item-row" style="align-items:center;">
+        <span class="prep-dday ${n<=1?'urgent':''}">${ddayText(n)}</span>
+        <span><b>${escapeHtml(p.subject)}</b> · ${escapeHtml(p.item)}</span>
+      </div>`;
+    if(admin){
+      const btn = document.createElement('button');
+      btn.className = "del-btn"; btn.textContent = "삭제";
+      btn.onclick = ()=> deletePrep(idx);
+      row.appendChild(btn);
+    }
+    el.appendChild(row);
+  });
+}
+function addPrep(){
+  if(!isAdmin()) return;
+  const subject = document.getElementById('prepSubjectInput').value.trim();
+  const item = document.getElementById('prepItemInput').value.trim();
+  const date = document.getElementById('prepDateInput').value;
+  if(!subject || !item || !date){ showAlertModal("과목, 준비물, 날짜를 모두 입력해주세요."); return; }
+  const list = getPreps();
+  list.push({subject, item, date});
+  savePreps(list);
+  document.getElementById('prepSubjectInput').value = "";
+  document.getElementById('prepItemInput').value = "";
+  document.getElementById('prepDateInput').value = "";
+  renderPreps();
+}
+function deletePrep(idx){
+  if(!isAdmin()) return;
+  showConfirmModal("이 준비물을 삭제할까요?", ()=>{
+    const list = getPreps();
+    list.splice(idx,1);
+    savePreps(list);
+    renderPreps();
+  });
+}
+
+/* ====================== 일정(캘린더) (localStorage) ====================== */
+function getCalendar(){ return lsGet('classapp_calendar', CONFIG.calendar); }
+function saveCalendar(list){ lsSet('classapp_calendar', list); }
+
+function renderCalendar(){
+  const admin = isAdmin();
+  const full = getCalendar();
+  const order = full.map((c,i)=>i).sort((a,b)=> daysUntil(full[a].date)-daysUntil(full[b].date));
+  const el = document.getElementById('calList');
+  const homeEl = document.getElementById('homeCalendar');
+  el.innerHTML = ""; homeEl.innerHTML = "";
+  const tagLabel = {exam:"시험", assign:"과제", event:"행사"};
+  if(order.length===0){
+    el.innerHTML = '<p class="muted">등록된 일정이 없어요</p>';
+    homeEl.innerHTML = '<p class="muted">등록된 일정이 없어요</p>';
+    return;
+  }
+  order.forEach((idx,i)=>{
+    const c = full[idx];
+    const n = daysUntil(c.date);
+    const dt = new Date(c.date+"T00:00:00");
+    const row = document.createElement('div');
+    row.className = "cal-item item-row";
+    row.innerHTML = `<div class="cal-dday">${ddayText(n)}</div>
+      <div class="cal-info">
+        <div class="cal-title"><span class="tag ${c.type}">${tagLabel[c.type]||'행사'}</span>${escapeHtml(c.title)}</div>
+        <div class="cal-date">${dt.getMonth()+1}월 ${dt.getDate()}일</div>
+      </div>`;
+    if(admin){
+      const btn = document.createElement('button');
+      btn.className = "del-btn"; btn.textContent = "삭제";
+      btn.onclick = ()=> deleteCal(idx);
+      row.appendChild(btn);
+    }
+    el.appendChild(row);
+    if(i<3) homeEl.appendChild(row.cloneNode(true));
+  });
+}
+function addCal(){
+  if(!isAdmin()) return;
+  const title = document.getElementById('calTitleInput').value.trim();
+  const date = document.getElementById('calDateInput').value;
+  const type = document.getElementById('calTypeInput').value;
+  if(!title || !date){ showAlertModal("제목과 날짜를 입력해주세요."); return; }
+  const list = getCalendar();
+  list.push({title, date, type});
+  saveCalendar(list);
+  document.getElementById('calTitleInput').value = "";
+  document.getElementById('calDateInput').value = "";
+  renderCalendar();
+}
+function deleteCal(idx){
+  if(!isAdmin()) return;
+  showConfirmModal("이 일정을 삭제할까요?", ()=>{
+    const list = getCalendar();
+    list.splice(idx,1);
+    saveCalendar(list);
+    renderCalendar();
+  });
+}
+
+/* ====================== 자료실 (localStorage) ====================== */
+function getMaterials(){ return lsGet('classapp_materials', CONFIG.materials); }
+function saveMaterials(list){ lsSet('classapp_materials', list); }
+
+function renderMaterials(){
+  const admin = isAdmin();
+  const list = getMaterials();
+  const el = document.getElementById('materialList');
+  el.innerHTML = "";
+  if(list.length===0){ el.innerHTML = '<p class="muted">등록된 자료가 없어요</p>'; return; }
+  list.forEach((m,idx)=>{
+    const row = document.createElement('div');
+    row.className = "material-item item-row";
+    row.innerHTML = `<div style="display:flex; gap:12px; flex:1;">
+        <div class="material-emoji">📎</div>
+        <div class="material-body">
+          <div class="material-title">${m.subject?`<span class="tag material">${escapeHtml(m.subject)}</span>`:''}${escapeHtml(m.title)}</div>
+          ${m.desc?`<div class="material-desc">${escapeHtml(m.desc)}</div>`:''}
+          ${m.link?`<a class="material-link" href="${escapeHtml(m.link)}" target="_blank" rel="noopener">🔗 자료 열기</a>`:''}
+        </div>
+      </div>`;
+    if(admin){
+      const btn = document.createElement('button');
+      btn.className = "del-btn"; btn.textContent = "삭제";
+      btn.onclick = ()=> deleteMaterial(idx);
+      row.appendChild(btn);
+    }
+    el.appendChild(row);
+  });
+}
+function addMaterial(){
+  if(!isAdmin()) return;
+  const title = document.getElementById('matTitleInput').value.trim();
+  const subject = document.getElementById('matSubjectInput').value.trim();
+  const desc = document.getElementById('matDescInput').value.trim();
+  const link = document.getElementById('matLinkInput').value.trim();
+  if(!title){ showAlertModal("자료 제목을 입력해주세요."); return; }
+  const list = getMaterials();
+  const now = new Date();
+  list.unshift({title, subject, desc, link, date:`${now.getMonth()+1}-${now.getDate()}`});
+  saveMaterials(list);
+  document.getElementById('matTitleInput').value = "";
+  document.getElementById('matSubjectInput').value = "";
+  document.getElementById('matDescInput').value = "";
+  document.getElementById('matLinkInput').value = "";
+  renderMaterials();
+}
+function deleteMaterial(idx){
+  if(!isAdmin()) return;
+  showConfirmModal("이 자료를 삭제할까요?", ()=>{
+    const list = getMaterials();
+    list.splice(idx,1);
+    saveMaterials(list);
+    renderMaterials();
+  });
+}
+
+/* ====================== 투표 (localStorage) ====================== */
+function getPoll(){ return lsGet('classapp_poll', CONFIG.poll); }
+function savePoll(p){ lsSet('classapp_poll', p); }
+function getPollVotes(){ return lsGet('classapp_poll_votes', getPoll().options.map(()=>0)); }
+function hasVoted(){ return lsGet('classapp_poll_voted', false); }
+
+function renderPoll(){
+  const poll = getPoll();
+  document.getElementById('pollQ').textContent = "🗳️ " + poll.question;
+  const votes = getPollVotes();
+  const total = votes.reduce((a,b)=>a+b,0);
+  const voted = hasVoted();
+  const el = document.getElementById('pollOpts');
+  el.innerHTML = "";
+  poll.options.forEach((opt,i)=>{
+    const pct = total>0 ? Math.round((votes[i]||0)/total*100) : 0;
+    const btn = document.createElement('button');
+    btn.className = "poll-btn";
+    btn.disabled = voted;
+    btn.innerHTML = `${voted?`<div class="fill" style="width:${pct}%"></div>`:''}
+      <div class="label"><span>${escapeHtml(opt)}</span><span>${voted? pct+'% ('+(votes[i]||0)+'표)':''}</span></div>`;
+    btn.onclick = ()=> votePoll(i);
+    el.appendChild(btn);
+  });
+  document.getElementById('pollTotal').textContent = voted ? `총 ${total}명 참여` : "탭해서 투표해보세요 (1인 1표)";
+}
+function votePoll(i){
+  if(hasVoted()) return;
+  const votes = getPollVotes();
+  votes[i] = (votes[i]||0)+1;
+  lsSet('classapp_poll_votes', votes);
+  lsSet('classapp_poll_voted', true);
+  renderPoll();
+}
+function setNewPoll(){
+  if(!isAdmin()) return;
+  const question = document.getElementById('pollQInput').value.trim();
+  const optsRaw = document.getElementById('pollOptsInput').value.trim();
+  if(!question || !optsRaw){ showAlertModal("질문과 선택지를 모두 입력해주세요."); return; }
+  const options = optsRaw.split(",").map(s=>s.trim()).filter(Boolean);
+  if(options.length<2){ showAlertModal("선택지는 2개 이상 입력해주세요."); return; }
+  showConfirmModal("새 투표를 시작하면 기존 투표 결과가 초기화돼요. 계속할까요?", ()=>{
+    savePoll({question, options});
+    lsSet('classapp_poll_votes', options.map(()=>0));
+    lsSet('classapp_poll_voted', false);
+    document.getElementById('pollQInput').value = "";
+    document.getElementById('pollOptsInput').value = "";
+    renderPoll();
+  });
+}
+
+/* ====================== 탭 전환 ====================== */
+function switchTab(tab){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('tab-'+tab)?.classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=> b.classList.toggle('active', b.dataset.tab===tab));
+  document.querySelectorAll('.nav-btn').forEach(b=> b.classList.toggle('active', b.dataset.tab===tab));
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+document.querySelectorAll('.tab-btn, .nav-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=> switchTab(btn.dataset.tab));
+});
+
+/* ====================== 초기 렌더 ====================== */
+function renderAll(){
+  renderHero();
+  renderDday();
+  renderTimetable();
+  renderMeal();
+  renderNotices();
+  renderPreps();
+  renderCalendar();
+  renderMaterials();
+  renderPoll();
+  updateAdminUI();
+}
+renderAll();
+switchTab('home');
+setInterval(renderHero, 30000); // 30초마다 현재 교시 갱신
+</script>
+</body>
+</html>
