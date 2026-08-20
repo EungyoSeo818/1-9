@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <title>아구뽀 알리미</title>
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-512.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="아구뽀 알리미">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Jua&family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
@@ -645,6 +650,10 @@
   <div class="modal-box" id="modalBox"></div>
 </div>
 
+<!-- Firebase (실시간 동기화용) -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+
 <script>
 /* ======================================================================
    CONFIG — 여기 데이터만 바꾸면 우리반에 맞게 커스터마이징 가능합니다.
@@ -674,14 +683,14 @@ const CONFIG = {
   ],
   lunchAfterPeriod: 4, // 4교시 이후 점심시간
 
-    meals: {
-    "월": "급식 없음 (대체공휴일)",
-    "화": "가바현미밥 / 소고기무국 / 매운돼지갈비찜 / 잡채 / 오이소박이 / 복숭아에이드",
-    "수": "발아현미밥 / 건새우아욱국 / 마라로제찜닭 / 치즈볼 / 숙주미나리무침 / 총각김치",
-    "목": "콩나물밥 / 청국장 / 참치김치찌개 / 납작만두&비빔야채 / 열무김치 / 수제망고요거트",
-    "금": "냉메밀소바 / 스팸꼬마김밥 / 롱새우꼬치&칠리소스 / 배추겉절이 / 파인애플"
+  meals: {
+    "월": "잡곡밥 / 미역국 / 제육볶음 / 계란말이 / 배추김치",
+    "화": "흑미밥 / 어묵국 / 닭갈비 / 감자조림 / 깍두기",
+    "수": "카레라이스 / 유부장국 / 치킨너겟 / 요거트 / 단무지",
+    "목": "잡곡밥 / 순두부찌개 / 불고기 / 시금치나물 / 김치",
+    "금": "볶음밥 / 짬뽕국 / 탕수육 / 미니핫도그 / 무생채"
   },
-  
+
   // D-day 위젯 (하드코딩 날짜, 필요시 수정)
   ddays: [
     {label:"9월 모의고사", date:"2026-09-02", color:"mint"},
@@ -757,6 +766,50 @@ function lsSet(key, val){
 }
 function escapeHtml(str){
   return (str||"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+/* ====================== Firebase 실시간 동기화 ======================
+   ⚠️ 아래 firebaseConfig 값을 본인의 Firebase 프로젝트 값으로 꼭 바꿔주세요!
+   (Firebase 콘솔 > 프로젝트 설정 > 내 앱 에서 확인할 수 있어요) */
+const firebaseConfig = {
+  apiKey: "AIzaSyCKZZOH0MOQv0Kegf88ymfixppvQ_slkG8",
+  authDomain: "agubbo1-9.firebaseapp.com",
+  databaseURL: "https://agubbo1-9-default-rtdb.firebaseio.com",
+  projectId: "agubbo1-9",
+  storageBucket: "agubbo1-9.firebasestorage.app",
+  messagingSenderId: "487941860097",
+  appId: "1:487941860097:web:2bec1deef735fe2308c900"
+};
+let fbEnabled = false;
+let db = null;
+try{
+  if(firebaseConfig.apiKey && !firebaseConfig.apiKey.includes("여기에")){
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+    fbEnabled = true;
+  }
+}catch(e){ console.warn("Firebase 초기화 실패, localStorage 모드로 동작합니다.", e); }
+
+// fbEnabled가 false면(설정 전) 이 기기에서만 저장되는 localStorage 모드로 자동 폴백합니다.
+function fbListen(path, defaultVal, onChange){
+  if(!fbEnabled){ onChange(lsGet('classapp_'+path.replace(/\//g,'_'), defaultVal)); return; }
+  db.ref(path).on('value', snap=>{
+    const val = snap.val();
+    if(val === null){ db.ref(path).set(defaultVal); onChange(defaultVal); }
+    else{ onChange(val); }
+  });
+}
+function fbSet(path, val){
+  if(!fbEnabled){ lsSet('classapp_'+path.replace(/\//g,'_'), val); return; }
+  db.ref(path).set(val);
+}
+function fbIncrement(path){
+  if(!fbEnabled){
+    const cur = lsGet('classapp_'+path.replace(/\//g,'_'), 0);
+    lsSet('classapp_'+path.replace(/\//g,'_'), cur+1);
+    return;
+  }
+  db.ref(path).transaction(cur => (cur||0)+1);
 }
 
 /* ====================== 모달 (관리자 로그인/확인창) ======================
@@ -954,11 +1007,11 @@ function renderMeal(){
   });
 }
 
-/* ====================== 공지사항 (localStorage) ====================== */
-function getNotices(){
-  return lsGet('classapp_notices', CONFIG.notices);
-}
-function saveNotices(list){ lsSet('classapp_notices', list); }
+/* ====================== 공지사항 (Firebase 실시간 동기화) ====================== */
+let noticesCache = CONFIG.notices;
+function getNotices(){ return noticesCache; }
+function saveNotices(list){ noticesCache = list; fbSet('notices', list); renderNotices(); }
+fbListen('notices', CONFIG.notices, val=>{ noticesCache = val; renderNotices(); });
 
 function renderNotices(){
   const admin = isAdmin();
@@ -1017,7 +1070,6 @@ function addNotice(){
   document.getElementById('noticeTitleInput').value = "";
   document.getElementById('noticeBodyInput').value = "";
   document.getElementById('noticePinInput').checked = false;
-  renderNotices();
 }
 function deleteNotice(idx){
   if(!isAdmin()) return;
@@ -1025,13 +1077,14 @@ function deleteNotice(idx){
     const list = getNotices();
     list.splice(idx,1);
     saveNotices(list);
-    renderNotices();
   });
 }
 
-/* ====================== 준비물 (localStorage) ====================== */
-function getPreps(){ return lsGet('classapp_preps', CONFIG.preps); }
-function savePreps(list){ lsSet('classapp_preps', list); }
+/* ====================== 준비물 (Firebase 실시간 동기화) ====================== */
+let prepsCache = CONFIG.preps;
+function getPreps(){ return prepsCache; }
+function savePreps(list){ prepsCache = list; fbSet('preps', list); renderPreps(); }
+fbListen('preps', CONFIG.preps, val=>{ prepsCache = val; renderPreps(); });
 
 function renderPreps(){
   const admin = isAdmin();
@@ -1070,7 +1123,6 @@ function addPrep(){
   document.getElementById('prepSubjectInput').value = "";
   document.getElementById('prepItemInput').value = "";
   document.getElementById('prepDateInput').value = "";
-  renderPreps();
 }
 function deletePrep(idx){
   if(!isAdmin()) return;
@@ -1078,13 +1130,14 @@ function deletePrep(idx){
     const list = getPreps();
     list.splice(idx,1);
     savePreps(list);
-    renderPreps();
   });
 }
 
-/* ====================== 일정(캘린더) (localStorage) ====================== */
-function getCalendar(){ return lsGet('classapp_calendar', CONFIG.calendar); }
-function saveCalendar(list){ lsSet('classapp_calendar', list); }
+/* ====================== 일정(캘린더) (Firebase 실시간 동기화) ====================== */
+let calendarCache = CONFIG.calendar;
+function getCalendar(){ return calendarCache; }
+function saveCalendar(list){ calendarCache = list; fbSet('calendar', list); renderCalendar(); }
+fbListen('calendar', CONFIG.calendar, val=>{ calendarCache = val; renderCalendar(); });
 
 function renderCalendar(){
   const admin = isAdmin();
@@ -1131,7 +1184,6 @@ function addCal(){
   saveCalendar(list);
   document.getElementById('calTitleInput').value = "";
   document.getElementById('calDateInput').value = "";
-  renderCalendar();
 }
 function deleteCal(idx){
   if(!isAdmin()) return;
@@ -1139,13 +1191,14 @@ function deleteCal(idx){
     const list = getCalendar();
     list.splice(idx,1);
     saveCalendar(list);
-    renderCalendar();
   });
 }
 
-/* ====================== 자료실 (localStorage) ====================== */
-function getMaterials(){ return lsGet('classapp_materials', CONFIG.materials); }
-function saveMaterials(list){ lsSet('classapp_materials', list); }
+/* ====================== 자료실 (Firebase 실시간 동기화) ====================== */
+let materialsCache = CONFIG.materials;
+function getMaterials(){ return materialsCache; }
+function saveMaterials(list){ materialsCache = list; fbSet('materials', list); renderMaterials(); }
+fbListen('materials', CONFIG.materials, val=>{ materialsCache = val; renderMaterials(); });
 
 function renderMaterials(){
   const admin = isAdmin();
@@ -1188,7 +1241,6 @@ function addMaterial(){
   document.getElementById('matSubjectInput').value = "";
   document.getElementById('matDescInput').value = "";
   document.getElementById('matLinkInput').value = "";
-  renderMaterials();
 }
 function deleteMaterial(idx){
   if(!isAdmin()) return;
@@ -1196,15 +1248,20 @@ function deleteMaterial(idx){
     const list = getMaterials();
     list.splice(idx,1);
     saveMaterials(list);
-    renderMaterials();
   });
 }
 
-/* ====================== 투표 (localStorage) ====================== */
-function getPoll(){ return lsGet('classapp_poll', CONFIG.poll); }
-function savePoll(p){ lsSet('classapp_poll', p); }
-function getPollVotes(){ return lsGet('classapp_poll_votes', getPoll().options.map(()=>0)); }
-function hasVoted(){ return lsGet('classapp_poll_voted', false); }
+/* ====================== 투표 (Firebase 실시간 동기화) ====================== */
+const DEFAULT_POLL = Object.assign({id:0}, CONFIG.poll);
+let pollCache = DEFAULT_POLL;
+let pollVotesCache = DEFAULT_POLL.options.map(()=>0);
+function getPoll(){ return pollCache; }
+function savePoll(p){ pollCache = p; fbSet('poll', p); renderPoll(); }
+function getPollVotes(){ return pollVotesCache; }
+// "투표 완료" 여부는 기기별로 저장하되, 투표 id가 바뀌면(=새 투표 시작) 다시 투표할 수 있어요.
+function hasVoted(){ return lsGet('classapp_voted_poll_id', null) === pollCache.id; }
+fbListen('poll', DEFAULT_POLL, val=>{ pollCache = val; renderPoll(); });
+fbListen('pollVotes', DEFAULT_POLL.options.map(()=>0), val=>{ pollVotesCache = val; renderPoll(); });
 
 function renderPoll(){
   const poll = getPoll();
@@ -1228,10 +1285,11 @@ function renderPoll(){
 }
 function votePoll(i){
   if(hasVoted()) return;
-  const votes = getPollVotes();
-  votes[i] = (votes[i]||0)+1;
-  lsSet('classapp_poll_votes', votes);
-  lsSet('classapp_poll_voted', true);
+  fbIncrement('pollVotes/'+i);
+  lsSet('classapp_voted_poll_id', pollCache.id);
+  // 낙관적 업데이트(응답 기다리지 않고 화면 먼저 갱신), 실제 값은 리스너가 다시 확정해줘요.
+  pollVotesCache = pollVotesCache.slice();
+  pollVotesCache[i] = (pollVotesCache[i]||0)+1;
   renderPoll();
 }
 function setNewPoll(){
@@ -1242,9 +1300,9 @@ function setNewPoll(){
   const options = optsRaw.split(",").map(s=>s.trim()).filter(Boolean);
   if(options.length<2){ showAlertModal("선택지는 2개 이상 입력해주세요."); return; }
   showConfirmModal("새 투표를 시작하면 기존 투표 결과가 초기화돼요. 계속할까요?", ()=>{
-    savePoll({question, options});
-    lsSet('classapp_poll_votes', options.map(()=>0));
-    lsSet('classapp_poll_voted', false);
+    const newPoll = {question, options, id: Date.now()};
+    savePoll(newPoll);
+    fbSet('pollVotes', options.map(()=>0));
     document.getElementById('pollQInput').value = "";
     document.getElementById('pollOptsInput').value = "";
     renderPoll();
