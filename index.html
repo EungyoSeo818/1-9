@@ -254,9 +254,9 @@
   }
   .meal-item:last-child{border-bottom:none;}
   .meal-day{
-    width:44px; flex-shrink:0;
-    font-family:'Jua'; font-size:15px; text-align:center;
-    color:var(--sky-deep);
+    width:52px; flex-shrink:0;
+    font-family:'Jua'; font-size:14px; text-align:center;
+    color:var(--sky-deep); line-height:1.3;
   }
   .meal-day.today{color:var(--coral-deep);}
   .meal-menu{font-size:13.5px; line-height:1.6; color:var(--ink);}
@@ -685,12 +685,27 @@ const CONFIG = {
   ],
   lunchAfterPeriod: 4, // 4교시 이후 점심시간
 
+  // 급식: 평소엔 요일별 기본 메뉴(mealsDefault)가 반복해서 보여지고,
+  // 매달 받은 실제 식단표 날짜(meals)가 있는 주는 그 날짜 데이터로 덮어써서 보여줘요.
+  mealsDefault: {
+    "월": "가바현미밥 / 소고기무국 / 매운돼지갈비찜 / 잡채 / 오이소박이 / 복숭아에이드",
+    "화": "발아현미밥 / 건새우아욱국 / 마라로제찜닭 / 치즈볼 / 숙주미나리무침 / 총각김치",
+    "수": "콩나물밥 / 청국장 / 참치김치찌개 / 납작만두&비빔야채 / 열무김치 / 수제망고요거트",
+    "목": "냉메밀소바 / 스팸꼬마김밥 / 롱새우꼬치&칠리소스 / 배추겉절이 / 파인애플",
+    "금": "흑미밥 / 코다리강정 / 줄면야채무침 / 깍두기 / 포도알맹이젤리"
+  },
+  // 매달 받는 실제 식단표: 여기 날짜가 있으면 위 기본 메뉴 대신 이걸 보여줘요.
   meals: {
-    "월": "급식 없음 (대체공휴일)",
-    "화": "가바현미밥 / 소고기무국 / 매운돼지갈비찜 / 잡채 / 오이소박이 / 복숭아에이드",
-    "수": "발아현미밥 / 건새우아욱국 / 마라로제찜닭 / 치즈볼 / 숙주미나리무침 / 총각김치",
-    "목": "콩나물밥 / 청국장 / 참치김치찌개 / 납작만두&비빔야채 / 열무김치 / 수제망고요거트",
-    "금": "냉메밀소바 / 스팸꼬마김밥 / 롱새우꼬치&칠리소스 / 배추겉절이 / 파인애플"
+    "2026-08-18": "가바현미밥 / 소고기무국 / 매운돼지갈비찜 / 잡채 / 오이소박이 / 복숭아에이드",
+    "2026-08-19": "발아현미밥 / 건새우아욱국 / 마라로제찜닭 / 치즈볼 / 숙주미나리무침 / 총각김치",
+    "2026-08-20": "콩나물밥 / 청국장 / 참치김치찌개 / 납작만두&비빔야채 / 열무김치 / 수제망고요거트",
+    "2026-08-21": "냉메밀소바 / 스팸꼬마김밥 / 롱새우꼬치&칠리소스 / 배추겉절이 / 파인애플",
+    "2026-08-24": "흑미밥 / 코다리강정 / 줄면야채무침 / 깍두기 / 포도알맹이젤리",
+    "2026-08-25": "기장밥 / 쇠고기미역국 / 치즈볼닭 / 새우실애호박볶음 / 배추김치 / 사인머스캣주스",
+    "2026-08-26": "괴정's치밥 / 맑은콩나물국 / 바질치아바타샌드위치 / 가지나물 / 배추김치 / 딸기드림요구르트",
+    "2026-08-27": "혼합영양밥 / 마라탕 / 치킨데리야끼구이 / 참나물무침 / 배추김치 / 블루베리토마토",
+    "2026-08-28": "냉김치말이국수 / 구운삼각주먹밥 / 반반왕만두(고기+김) / 열무김치 / 짜먹는쉬링(쿠키앤크림맛)",
+    "2026-08-31": "햄야채볶음밥 / 순두부찌개 / 파닭 / 치킨무오이소박이 / 니랑드사이다제로"
   },
 
   // D-day 위젯 (하드코딩 날짜, 필요시 수정)
@@ -702,36 +717,28 @@ const CONFIG = {
     {label:"겨울방학식", date:"2026-12-31", color:"mint"}
   ],
 
-  // 공지사항 초기 샘플 데이터
-  notices: [
-    {title:"반장선거 공약 안내", body:"이번 주 반장선거 후보 공약을 이 앱으로 확인할 수 있어요! 궁금한 점은 댓글 대신 직접 물어봐주세요 :)", pinned:true, author:"학급회", date:"08-18"},
-    {title:"체육대회 종목 투표 진행중", body:"아래 투표 탭에서 우리반 대표 종목에 투표해주세요. 목요일 종례 전까지 마감입니다.", pinned:false, author:"체육부장", date:"08-18"},
-    {title:"교실 청소 구역 안내문 게시", body:"이번 주부터 청소 구역이 일부 변경되었습니다. 게시판 확인 부탁드려요.", pinned:false, author:"환경부장", date:"08-17"}
-  ],
+  // 공지사항 기본값 (관리자가 앱에서 직접 추가)
+  notices: [],
 
-  // 준비물 (D-day는 날짜 기준 자동 계산)
-  preps: [
-    {subject:"미술", item:"스케치북, 4B연필", date:"2026-08-20"},
-    {subject:"체육", item:"체육복, 운동화", date:"2026-08-19"},
-    {subject:"정보", item:"개인 USB", date:"2026-08-21"},
-    {subject:"통합과학", item:"실험보고서 양식 출력", date:"2026-08-22"}
-  ],
+  // 준비물 기본값 (D-day는 날짜 기준 자동 계산, 관리자가 앱에서 직접 추가)
+  preps: [],
 
   // 시험/과제/행사 캘린더
   calendar: [
+    {title:"프로젝트 봉사활동 보고서(오전 10시까지 서원석 선생님께 직접 출력하여 제출)", date:"2026-08-21", type:"assign"},
+    {title:"영어 미디어 비평 활동 보고서", date:"2026-08-21", type:"assign"},
+    {title:"수학숙제: 20p 생각넓히기, 학습지-5번(공통 상황)까지", date:"2026-08-21", type:"assign"},
+    {title:"학급 독서감상문(5줄 이상)", date:"2026-08-24", type:"assign"},
     {title:"9월 모의고사", date:"2026-09-02", type:"exam"},
-    {title:"10월 모의고사", date:"2026-10-20", type:"exam"},
     {title:"2학기 중간고사 시작", date:"2026-10-14", type:"exam"},
+    {title:"10월 모의고사", date:"2026-10-20", type:"exam"},
     {title:"2학기 기말고사 시작", date:"2026-12-09", type:"exam"},
     {title:"학교 축제", date:"2026-12-24", type:"event"},
     {title:"겨울방학식", date:"2026-12-31", type:"event"}
   ],
 
-  // 자료실 초기 샘플 데이터
-  materials: [
-    {title:"수학 2단원 학습지", subject:"수학", desc:"수업시간에 나눠준 학습지 스캔본입니다.", link:"https://drive.google.com", date:"08-18"},
-    {title:"중간고사 대비 한국사 정리노트", subject:"한국사", desc:"제가 직접 정리한 노트예요, 자유롭게 참고하세요!", link:"https://drive.google.com", date:"08-18"}
-  ],
+  // 자료실 기본값 (관리자가 앱에서 직접 추가)
+  materials: [],
 
   // 투표
   poll: {
@@ -743,6 +750,7 @@ const CONFIG = {
 /* ====================== 유틸 ====================== */
 const DAY_NAMES = ["일","월","화","수","목","금","토"];
 function todayKey(){ return DAY_NAMES[new Date().getDay()]; }
+function dateKey(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
 function pad(n){ return n<10 ? "0"+n : ""+n; }
 function fmtDate(d){ return `${d.getMonth()+1}월 ${d.getDate()}일 (${DAY_NAMES[d.getDay()]})`; }
 function daysUntil(dateStr){
@@ -920,6 +928,13 @@ function updateAdminUI(){
 }
 
 /* ====================== 히어로: 현재 교시 ====================== */
+function getMealFor(date){
+  const key = dateKey(date);
+  if(CONFIG.meals[key]) return CONFIG.meals[key];
+  const wk = DAY_NAMES[date.getDay()];
+  return CONFIG.mealsDefault[wk] || "등록된 급식 정보가 없어요";
+}
+
 function renderHero(){
   const now = new Date();
   document.getElementById('heroDate').textContent = fmtDate(now) + " · " + CONFIG.className.split("·")[1];
@@ -979,20 +994,32 @@ function renderHero(){
   document.getElementById('heroPeriod').textContent = periodText;
   document.getElementById('heroSub').textContent = subText;
   document.getElementById('heroRing').textContent = ring;
-  document.getElementById('heroMeal').textContent = CONFIG.meals[dk] || "급식이 없는 날이에요";
+  document.getElementById('heroMeal').textContent = getMealFor(now);
 }
 
 /* ====================== D-day 스티커 ====================== */
 function renderDday(){
   const row = document.getElementById('ddayRow');
   row.innerHTML = "";
-  CONFIG.ddays.forEach(d=>{
-    const n = daysUntil(d.date);
+  // 디데이는 더 이상 별도로 관리하지 않고, '일정' 탭 데이터 중
+  // 오늘 이후(D-DAY 포함)로 가장 가까운 일정을 자동으로 뽑아서 보여줘요.
+  const colorMap = {exam:'pink', assess:'mint', assign:'yellow', event:'mint'};
+  const full = (typeof getCalendar === 'function') ? getCalendar() : CONFIG.calendar;
+  const upcoming = full
+    .map(c=>({...c, n: daysUntil(c.date)}))
+    .filter(c=>c.n >= 0)
+    .sort((a,b)=>a.n-b.n)
+    .slice(0,6);
+  if(upcoming.length===0){
+    row.innerHTML = '<p class="muted" style="padding:6px 4px;">등록된 일정이 없어요</p>';
+    return;
+  }
+  upcoming.forEach(d=>{
     const el = document.createElement('div');
-    el.className = "sticky " + d.color;
+    el.className = "sticky " + (colorMap[d.type]||'mint');
     const dt = new Date(d.date+"T00:00:00");
-    el.innerHTML = `<div class="dday-label">${d.label}</div>
-      <div class="dday-num">${ddayText(n)}</div>
+    el.innerHTML = `<div class="dday-label">${escapeHtml(d.title)}</div>
+      <div class="dday-num">${ddayText(d.n)}</div>
       <div class="dday-date">${dt.getMonth()+1}.${dt.getDate()}</div>`;
     row.appendChild(el);
   });
@@ -1025,15 +1052,27 @@ function renderTimetable(){
 
 /* ====================== 급식 ====================== */
 function renderMeal(){
-  const dk = todayKey();
   const el = document.getElementById('mealList');
   el.innerHTML = "";
-  Object.entries(CONFIG.meals).forEach(([day,menu])=>{
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  // 이번 주 월요일 구하기 (일요일=0 기준 보정)
+  const dow = today.getDay();
+  const mondayOffset = dow === 0 ? -6 : 1 - dow;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() + mondayOffset);
+  const todayKeyStr = dateKey(today);
+
+  for(let i=0;i<5;i++){
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    const menu = getMealFor(d);
+    const key = dateKey(d);
     const div = document.createElement('div');
     div.className = "meal-item";
-    div.innerHTML = `<div class="meal-day ${day===dk?'today':''}">${day}</div><div class="meal-menu">${menu}</div>`;
+    div.innerHTML = `<div class="meal-day ${key===todayKeyStr?'today':''}">${d.getMonth()+1}/${d.getDate()}<br><span style="font-size:11px;">(${DAY_NAMES[d.getDay()]})</span></div><div class="meal-menu">${menu}</div>`;
     el.appendChild(div);
-  });
+  }
 }
 
 /* ====================== 공지사항 (Firebase 실시간 동기화) ====================== */
@@ -1113,7 +1152,16 @@ function deleteNotice(idx){
 let prepsCache = CONFIG.preps;
 function getPreps(){ return prepsCache; }
 function savePreps(list){ prepsCache = list; fbSet('preps', list); renderPreps(); }
-fbListen('preps', CONFIG.preps, val=>{ prepsCache = val; renderPreps(); });
+function pruneExpiredPreps(list){
+  // 디데이가 지난(오늘보다 이전 날짜) 준비물은 자동으로 걸러내요.
+  return list.filter(p => daysUntil(p.date) >= 0);
+}
+fbListen('preps', CONFIG.preps, val=>{
+  const cleaned = pruneExpiredPreps(val);
+  prepsCache = cleaned;
+  if(cleaned.length !== val.length){ fbSet('preps', cleaned); }
+  renderPreps();
+});
 
 function renderPreps(){
   const admin = isAdmin();
@@ -1165,8 +1213,18 @@ function deletePrep(idx){
 /* ====================== 일정(캘린더) (Firebase 실시간 동기화) ====================== */
 let calendarCache = CONFIG.calendar;
 function getCalendar(){ return calendarCache; }
-function saveCalendar(list){ calendarCache = list; fbSet('calendar', list); renderCalendar(); }
-fbListen('calendar', CONFIG.calendar, val=>{ calendarCache = val; renderCalendar(); });
+function saveCalendar(list){ calendarCache = list; fbSet('calendar', list); renderCalendar(); renderDday(); }
+function pruneExpiredCalendar(list){
+  // 디데이가 지난(오늘보다 이전 날짜) 일정은 자동으로 걸러내요.
+  return list.filter(c => daysUntil(c.date) >= 0);
+}
+fbListen('calendar', CONFIG.calendar, val=>{
+  const cleaned = pruneExpiredCalendar(val);
+  calendarCache = cleaned;
+  if(cleaned.length !== val.length){ fbSet('calendar', cleaned); } // 지난 일정을 실제 저장소에서도 정리
+  renderCalendar();
+  renderDday();
+});
 
 function renderCalendar(){
   const admin = isAdmin();
